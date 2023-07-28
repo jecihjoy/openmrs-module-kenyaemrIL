@@ -40,6 +40,7 @@ public class ValidateTransferOutsTasks extends AbstractTask {
         /*Collect CCC numbers for transfer out patients*/
         List<String> trfCccNumbers = new ArrayList<>();
         for (Patient patient : this.fetchTransferOutPatients()) {
+            System.out.println("ValidateTransferOutsTasks processing for patient "+ patient.getPatientId());
             List<PatientIdentifier> patientIdentifiers = patient.getActiveIdentifiers();
             for (PatientIdentifier id : patientIdentifiers) {
                 if (id.getIdentifierType().getUuid().equals("05ee9cf4-7242-4a17-b4d4-00f707265c8a")) {
@@ -83,11 +84,12 @@ public class ValidateTransferOutsTasks extends AbstractTask {
                         String ccc = String.valueOf(patientStatus.get("ccc_no"));
                         String referralStatus = String.valueOf(patientStatus.get("transfer_status"));
                         if (referralStatus.equals("COMPLETED")) {
-                            PatientIdentifierType cccIdType = Context.getPatientService().getPatientIdentifierTypeByUuid("");
+                            PatientIdentifierType cccIdType = Context.getPatientService().getPatientIdentifierTypeByUuid("05ee9cf4-7242-4a17-b4d4-00f707265c8a");
                             List<Patient> patient = Context.getPatientService().getPatients(null, ccc, Arrays.asList(cccIdType), true);
                             if (!patient.isEmpty()) {
+                            Patient patient1 = Context.getPatientService().getPatient(patient.get(0).getPatientId());
                                 System.out.println("COMPLETED" + patient.get(0).getPatientId());
-                                verifyTransferredPatient(patient.get(0));
+                                verifyTransferredPatient(patient1);
                             }
                         }
                     }
@@ -140,6 +142,7 @@ public class ValidateTransferOutsTasks extends AbstractTask {
             toEncounterToUpdate.addObs(trfVerification);
             toEncounterToUpdate.addObs(trfVerificationDate);
             Context.getEncounterService().saveEncounter(toEncounterToUpdate);
+            System.out.println("TO verification complete");
         }
     }
 }

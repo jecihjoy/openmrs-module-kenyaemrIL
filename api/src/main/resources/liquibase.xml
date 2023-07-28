@@ -83,7 +83,7 @@
         </insert>
     </changeSet>
     <!--Adding scheduled task :Set the enrollment task-->
-    <changeSet id="${project.parent.artifactId}-20161211-1144" author="pwangoo">
+    <changeSet id="${project.parent.artifactId}-enrollment20161211-1144" author="pwangoo">
         <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="0">
                 SELECT COUNT(*) FROM scheduler_task_config
@@ -98,11 +98,11 @@
             <column name="schedulable_class" value="org.openmrs.module.kenyaemrIL.ProcessEnrollmentTask" />
             <column name="start_time_pattern" value="MM/dd/yyyy HH:mm:ss" />
             <column name="start_time" valueDate="2017-11-28T23:59:59" />
-            <column name="repeat_interval" value="7200" />
+            <column name="repeat_interval" value="4" />
             <column name="date_created" valueDate="CURRENT_TIMESTAMP" />
             <column name="created_by" value="1" />
             <column name="start_on_startup" value="1" />
-            <column name="started" value="0" />
+            <column name="started" value="1" />
             <column name="uuid" value="c852007f-d1ab-4bf7-8fea-18e4d29e94cc" />
         </insert>
     </changeSet>
@@ -340,7 +340,7 @@
         </insert>
     </changeSet>
 
-    <changeSet id="${project.parent.artifactId}-20220804-1629" author="aojwang">
+    <changeSet id="${project.parent.artifactId}-0000000000000000-ushauri-kimeniramba" author="aojwang">
         <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="0">
                 SELECT COUNT(*) FROM scheduler_task_config
@@ -355,11 +355,11 @@
             <column name="schedulable_class" value="org.openmrs.module.kenyaemrIL.UshauriDirectPushTask" />
             <column name="start_time_pattern" value="MM/dd/yyyy HH:mm:ss" />
             <column name="start_time" valueDate="2021-11-28T23:59:59" />
-            <column name="repeat_interval" value="18000" />
+            <column name="repeat_interval" value="5" />
             <column name="date_created" valueDate="CURRENT_TIMESTAMP" />
             <column name="created_by" value="1" />
-            <column name="start_on_startup" value="0" />
-            <column name="started" value="0" />
+            <column name="start_on_startup" value="1" />
+            <column name="started" value="1" />
                 <column name="uuid" value="7351bb07-97a2-47a6-804b-c9c018c36609" />
         </insert>
     </changeSet>
@@ -489,7 +489,7 @@
     </changeSet>
 
     <!--Adding scheduled task :Set program discontinuation task-->
-    <changeSet id="${project.parent.artifactId}-202306271030" author="jecihjoy">
+    <changeSet id="${project.parent.artifactId}-discontinuation202306271030" author="jecihjoy">
         <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="0">
                 SELECT COUNT(*) FROM scheduler_task_config
@@ -504,11 +504,11 @@
             <column name="schedulable_class" value="org.openmrs.module.kenyaemrIL.ProgramDiscontinuationTask" />
             <column name="start_time_pattern" value="MM/dd/yyyy HH:mm:ss" />
             <column name="start_time" valueDate="2023-01-01T23:59:59" />
-            <column name="repeat_interval" value="7200" />
+            <column name="repeat_interval" value="3" />
             <column name="date_created" valueDate="CURRENT_TIMESTAMP" />
             <column name="created_by" value="1" />
-            <column name="start_on_startup" value="0" />
-            <column name="started" value="0" />
+            <column name="start_on_startup" value="1" />
+            <column name="started" value="1" />
             <column name="uuid" value="9143b4e6-16c5-11ee-be56-0242ac120002" />
         </insert>
     </changeSet>
@@ -525,7 +525,7 @@
     </changeSet>
 
     <!--Reuse existing structure to support additional message types: Rename UshauriDirectPushTask to KenyaEmrInteropDirectPushTask-->
-    <changeSet id="${project.parent.artifactId}-202307030440" author="jecihjoy">
+    <changeSet id="${project.parent.artifactId}-update-ushauri-usinirambe" author="jecihjoy">
         <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="1">
                 SELECT COUNT(*) FROM scheduler_task_config
@@ -541,7 +541,7 @@
     </changeSet>
 
     <!-- Adding scheduled task : Validate transfer out patients -->
-    <changeSet id="${project.parent.artifactId}-validatorstask001" author="jecihjoy">
+    <changeSet id="${project.parent.artifactId}-001validate" author="jecihjoy">
         <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="0">
                 SELECT COUNT(*) FROM scheduler_task_config

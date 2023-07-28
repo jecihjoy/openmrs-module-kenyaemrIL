@@ -15,6 +15,7 @@ import java.util.List;
 public class ProgramDiscontinuationTask extends AbstractTask {
     @Override
     public void execute() {
+        System.out.println("ProgramDiscontinuationTask Task Running ++++++++++++++++++++++++++++++++++++++++++++++");
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
         /**Fetch the last date of sync*/
         Date fetchDate = null;
@@ -27,9 +28,10 @@ public class ProgramDiscontinuationTask extends AbstractTask {
             e.printStackTrace();
         }
         // Fetch all discontinuation encounters
+        System.out.println("Last ProgramDiscontinuationTask fetch date "+fetchDate);
         List<Encounter> pendingEnrollments = fetchPendingHivDiscontinuations(fetchDate);
         for (Encounter e : pendingEnrollments) {
-
+            System.out.println("ProgramDiscontinuationTask"+e.getPatient());
             discontinuationEvent(e.getPatient(), e);
         }
 
@@ -53,14 +55,17 @@ public class ProgramDiscontinuationTask extends AbstractTask {
                 "( " +
                 " select encounter_type_id, uuid, name from encounter_type where uuid ='2bdada65-4c72-4a48-8730-859890e25cee' " +
                 " ) et on et.encounter_type_id = e.encounter_type and e.voided = 0 " +
-                " where e.date_created >=  '2023-02-23 12:00:00' or e.date_changed >=  '2023-02-23 12:00:00' ");
+                " where e.date_created >=  '" + effectiveDate + "' or e.date_changed >=  '" + effectiveDate + "' ");
         q.append(" group by e.patient_id ");
+
+        System.out.println("DISCONTINUATION QUERY ======================= "+new String(q));
 
         List<Encounter> encounters = new ArrayList<>();
         List<List<Object>> queryData = Context.getAdministrationService().executeSQL(q.toString(), true);
         for (List<Object> row : queryData) {
             Integer encounterId = (Integer) row.get(0);
             Encounter e = Context.getEncounterService().getEncounter(encounterId);
+            System.out.println("```````````````````````````````` TO PATIENT "+e.getPatient().getPatientId());
             encounters.add(e);
         }
         return encounters;

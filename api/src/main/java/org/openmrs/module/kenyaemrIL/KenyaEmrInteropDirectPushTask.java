@@ -139,10 +139,11 @@ public class KenyaEmrInteropDirectPushTask extends AbstractTask {
                 JSONParser parser = new JSONParser();
                 JSONObject responseObj = (JSONObject) parser.parse(EntityUtils.toString(response.getEntity()));
                 JSONObject errorObj = (JSONObject) responseObj.get("response");
-                System.out.println("Error object" + errorObj.toJSONString());
+                System.out.println("HAPO TU "+responseObj.toJSONString());
 
                 if (errorObj != null) {
                     errorsString = (String) errorObj.get("msg");
+                    System.out.println("Error object" + errorObj.toJSONString());
                 }
                 System.out.println("Error sending message to interop server! " + "Status code - " + statusCode + ". Msg - " + errorsString);
                 log.error("Error sending message to interop server! " + "Status code - " + statusCode + ". Msg - " + errorsString);
