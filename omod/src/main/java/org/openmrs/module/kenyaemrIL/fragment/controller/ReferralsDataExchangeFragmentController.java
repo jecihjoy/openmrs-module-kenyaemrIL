@@ -4,6 +4,11 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import com.google.common.base.Strings;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClients;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
@@ -100,7 +105,7 @@ public class ReferralsDataExchangeFragmentController {
                     }
                     System.out.println("NUPI :  ==>" + nupiNumber);
                     if (nupiNumber != null) {
-                        String serverUrl = "https://afyakenyaapi.health.go.ke/partners/registry/search/upi/" + nupiNumber;
+                        String serverUrl = "https://dhpstagingapi.health.go.ke/partners/registry/search/upi/" + nupiNumber;
 
                         persistReferralData(getCRPatient(serverUrl), fhirConfig, fhirServiceRequest);
                     }
@@ -129,10 +134,33 @@ public class ReferralsDataExchangeFragmentController {
         IParser parser = fhirConfig.getFhirContext().newJsonParser().setPrettyPrint(true);
         ServiceRequest serviceRequest = parser.parseResource(ServiceRequest.class, referred.getPatientSummary());
         System.out.println(serviceRequest.getStatus());
-        System.out.println(serviceRequest.getCategory().get(0).getCoding().get(0).getDisplay());
+        System.out.println(fhirConfig.getFhirContext().newJsonParser().encodeResourceToString(serviceRequest));
         serviceRequest.setStatus(ServiceRequest.ServiceRequestStatus.COMPLETED);
-        fhirConfig.updateReferral(serviceRequest);
+        postFhirResource(fhirConfig.getFhirContext().newJsonParser().encodeResourceToString(serviceRequest),"https://interoperabilitylab.uonbi.ac.ke/interop230/fhir/v4");
+//        fhirConfig.updateReferral(serviceRequest);
         return SimpleObject.create("success", "true");
+    }
+
+    public static void postFhirResource(String fhirResource, String openHimUrl) throws Exception {
+        HttpClient httpClient = HttpClients.createDefault();
+        HttpPost httpPost = new HttpPost(openHimUrl);
+        String token = "Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IkU0MUU1QUM5RUIxNTlBMjc1NTY4NjM0MzIxMUJDQzAzMDMyMEUzMTZSUzI1NiIsIng1dCI6IjVCNWF5ZXNWbWlkVmFHTkRJUnZNQXdNZzR4WSIsInR5cCI6ImF0K2p3dCJ9.eyJpc3MiOiJodHRwczovL2RocGlkZW50aXR5c3RhZ2luZ2FwaS5oZWFsdGguZ28ua2UiLCJuYmYiOjE2OTM1NTk1MjIsImlhdCI6MTY5MzU1OTUyMiwiZXhwIjoxNjkzNjQ1OTIyLCJhdWQiOlsiREhQLkdhdGV3YXkiLCJESFAuUGFydG5lcnMiXSwic2NvcGUiOlsiREhQLkdhdGV3YXkiLCJESFAuUGFydG5lcnMiXSwiY2xpZW50X2lkIjoicGFydG5lci50ZXN0LmNsaWVudCIsImp0aSI6IjQxMDhBOEY2RkZDRTlFN0Q1M0ZGQkI0OUQzMDU1Q0VEIn0.T9go41MWh0cgoaX3YQDQqag9dUvbYEzYfaKvvs63QEMQ8iU72GtvaeoOhqS7Kzq-84ooaB73Lya4oM3Ua0kxk_jQ4HkMnG7o5NpYeMYXealoj2hTbCkgGta1XLVIter9Ozy7YAFMAaPPP_dBGb4kZQI9vWjSfyJh5ib_Hjq_J48OszhZOr3s9EMIXsTyL8SkzcjjY2rjJY05uaT0d3ev9RKOHC_Kc-dA-YkCE7i5c5TqBnvjU64iW3wcAWkM8LDvRDc9NZ7Pvw2mG2dTMf5vQ-uVNCswSolkoaPBJcGnTE0AHx9I1Ss1d2TekrIZcOI530yZOiGmj9UVgawTaY3edQ";
+
+        StringEntity fhirResourceEntity = new StringEntity(fhirResource);
+        httpPost.setEntity(fhirResourceEntity);
+        httpPost.setHeader("Content-type", "application/json");
+        httpPost.setHeader("Authorization", token);
+        System.out.println("TOKE ++++++++ " + token);
+
+        HttpResponse response = httpClient.execute(httpPost);
+        int statusCode = response.getStatusLine().getStatusCode();
+        if (statusCode >= 200 && statusCode < 300) {
+            System.out.println("FHIR resource was successfully posted to the OpenHIM channel");
+        } else {
+            String responseBody = response.getEntity().toString();
+            System.out.println("An error occurred while posting the FHIR resource to the OpenHIM channel. Status code: "
+                    + statusCode + " Response body: " + responseBody);
+        }
     }
 
     /**

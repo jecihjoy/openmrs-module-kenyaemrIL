@@ -1,6 +1,7 @@
 package org.openmrs.module.kenyaemrIL.api.shr;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.interceptor.BearerTokenAuthInterceptor;
 import groovy.util.logging.Slf4j;
@@ -163,11 +164,13 @@ public class FhirConfig {
     }
 
     public void updateReferral(ServiceRequest request) throws Exception {
-        System.out.println("Fhir: Update Referral Data ==>");
+        System.out.println("Fhir: Update Referral Data ==>"+request);
+//        request.setId(theResType + "ServiceRequest/" + "CR-" + nextResource.getIdElement().getIdPart());
         IGenericClient client = getFhirClient();
         if(client != null) {
             System.out.println("Fhir: client is not null ==>");
-            client.update().resource(request).execute();
+            MethodOutcome outcome = client.update().resource(request).execute();
+            System.out.println("OUTCOME +++++++++++++++++++ "+ outcome.getOperationOutcome());
         }
     }
 
