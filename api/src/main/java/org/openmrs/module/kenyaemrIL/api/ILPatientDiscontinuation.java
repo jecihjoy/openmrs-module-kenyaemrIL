@@ -144,14 +144,23 @@ public class ILPatientDiscontinuation {
         for (Obs ob : encounter.getObs()) {
             if (ob.getConcept().getUuid().equals("161555AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")) {
                 if (ob.getValueCoded().getUuid().equals("159492AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")) {
-                    programDiscontinuationMessage.setDiscontinuation_reason("Transfer Out");
-                    programDiscontinuationMessage.setService_request(referralInfo(encounter));
+                    List<Obs> consentObs = encounter.getObs().stream().filter(c -> c.getConcept().getUuid().equals("1710AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA") &&
+                                c.getValueCoded().getUuid().equals("1AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+                    ).collect(Collectors.toList());
+                    if (!consentObs.isEmpty()) {
+                        programDiscontinuationMessage.setDiscontinuation_reason("Transfer Out");
+                        programDiscontinuationMessage.setService_request(referralInfo(encounter));
+                    } else {
+                        continue;
+                    }
                 }else if (ob.getValueCoded().getUuid().equals("160034AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")) {
                     programDiscontinuationMessage.setDiscontinuation_reason("Death");
                 } else if (ob.getValueCoded().getUuid().equals("5240AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")) {
                     programDiscontinuationMessage.setDiscontinuation_reason("LTFU");
                 }else if (ob.getValueCoded().getUuid().equals("164349AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")) {
                     programDiscontinuationMessage.setDiscontinuation_reason("Stopped Treatment");
+                } else {
+                    continue;
                 }
             }
             if (ob.getConcept().getUuid().equals("164384AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")) {
